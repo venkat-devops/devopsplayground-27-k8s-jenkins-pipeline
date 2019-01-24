@@ -231,7 +231,18 @@ DSL Scripts: `jenkins-jobs/dsl-jobs/**/*.groovy`
 
 ![Build Now](readme_images/dsl-jobs/6.png?raw=true "Build Now")
 
+### Run the Pipeline
 
+### Interact with the Kuberntes deployments
+
+
+```
+# Find pods in test namespace
+kubectl get pods -n test
+
+# Curl the webserver
+kubectl -n test exec simple-webserver-xxx-xxx -- curl -s http://127.0.0.1:8080
+```
 
 
 
