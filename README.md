@@ -64,6 +64,12 @@ For simplicity it's included with in the same repository as the other resources 
 
 ## List of commands used during the playground:
 
+#### CD repo folder
+
+```
+cd devopsplayground-27-k8s-jenkins-pipeline/
+```
+
 #### Initialize Kubernetes
 
 ```
@@ -92,9 +98,11 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 
 #### Find master node name and make it schedulable
 ```
-kubectl get nodes
-kubectl describe node <master-name>
-kubectl taint node <master-name> node-role.kubernetes.io/master:-
+export K8S_MASTER=$(kubectl get nodes -o name | cut -d/ -f2)
+
+kubectl describe node $K8S_MASTER
+
+kubectl taint node $K8S_MASTER node-role.kubernetes.io/master:-
 ```
 
 
@@ -105,14 +113,13 @@ kubectl create -f jenkins-build/rbac.yaml
 
 #### Find Jenkins secret token
 ```
+JENKINS_TOKEN=$(kubectl get secrets $(kubectl get sa jenkins -o json|jq -r '.secrets[].name') -o json|jq -r '.data.token'|base64 -d)
+```
+
+Or use the manual commands
+```
 kubectl get secrets
 kubectl describe secret <jenkins-token-xxxxxxxx>
-```
-
-Or use the full command
-
-```
-JENKINS_TOKEN=$(kubectl get secrets $(kubectl get sa jenkins -o json|jq -r '.secrets[].name') -o json|jq -r '.data.token'|base64 -d)
 ```
 
 #### Jenkins Build and deploy
@@ -126,16 +133,25 @@ kubectl create -f  jenkins-build/deployment.yaml
 
 # Create service
 kubectl create -f  jenkins-build/service.yaml
+```
+
+#### Find Jenkins admin password
+
+```
+# Save Jenkins pod name in env var
+export JENKINS_POD=$(kubectl get po -l name=jenkins -o name | cut -d/ -f2)
 
 # Get the admin password from the logs 
-kubectl get logs -f jenkins-xxx-xxx
+kubectl logs $JENKINS_POD
 
 # Or from inside the container
-kubectl exec -ti jenkins-xxx-xxx -- bash
+kubectl exec -ti $JENKINS_POD -- bash
 cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-#### Connect to Jenkins with your browser
+### Jenkins configuration
+
+##### Connect to Jenkins
 
 > http://**<your_hostname_here>**.ldn.devopsplayground.com:**30001**
 
@@ -149,7 +165,7 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 ```
 # Get into the jenkins pod
-kubectl exec -ti jenkins-xxx-xxx -- bash
+kubectl exec -ti $JENKINS_POD -- bash
 
 java -jar /var/jenkins_home/war/WEB-INF/jenkins-cli.jar \
     -auth admin:admin \
@@ -179,11 +195,21 @@ java -jar /var/jenkins_home/war/WEB-INF/jenkins-cli.jar \
 
 ![New Item](readme_images/dsl-jobs/1.png?raw=true "New Item")
 
+---
+
 ![dsl-jobs](readme_images/dsl-jobs/2.png?raw=true "dsl-jobs")
+
+---
+Repository URL: `https://github.com/ecsdigital/devopsplayground-27-k8s-jenkins-pipeline.git`
 
 ![scm](readme_images/dsl-jobs/3.png?raw=true "scm")
 
+---
+
 ![Build](readme_images/dsl-jobs/4.png?raw=true "Build")
+
+---
+DSL Scripts: `jenkins-jobs/dsl-jobs/**/*.groovy`
 
 ![Build Dsl Jobs](readme_images/dsl-jobs/5.png?raw=true "Build Dsl Jobs")
 
