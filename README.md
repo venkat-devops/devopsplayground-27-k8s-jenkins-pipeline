@@ -78,6 +78,12 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
+#### Check what's running on the clustert
+```
+kubectl cluster-info
+kubectl get pods -n kube-system
+```
+
 #### Install Flannel
 
 ```
@@ -87,6 +93,7 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 #### Find master node name and make it schedulable
 ```
 kubectl get nodes
+kubectl describe node <master-name>
 kubectl taint node <master-name> node-role.kubernetes.io/master:-
 ```
 
@@ -111,10 +118,82 @@ JENKINS_TOKEN=$(kubectl get secrets $(kubectl get sa jenkins -o json|jq -r '.sec
 #### Jenkins Build and deploy
 
 ```
+# Build jenkins docker image
 docker build --build-arg K8S_TOKEN=$JENKINS_TOKEN -t jenkins:docker jenkins-build/.
 
+# Deploy Jenkins
 kubectl create -f  jenkins-build/deployment.yaml
+
+# Create service
+kubectl create -f  jenkins-build/service.yaml
+
+# Get the admin password from the logs 
+kubectl get logs -f jenkins-xxx-xxx
+
+# Or from inside the container
+kubectl exec -ti jenkins-xxx-xxx -- bash
+cat /var/jenkins_home/secrets/initialAdminPassword
 ```
+
+#### Connect to Jenkins with your browser
+
+> http://**<your_hostname_here>**.ldn.devopsplayground.com:**30001**
+
+##### Unlock Jenkins
+
+##### Install plugins 
+
+##### Create admin user 
+
+##### Install additional plugins
+
+```
+# Get into the jenkins pod
+kubectl exec -ti jenkins-xxx-xxx -- bash
+
+java -jar /var/jenkins_home/war/WEB-INF/jenkins-cli.jar \
+    -auth admin:admin \
+    -s http://127.0.0.1:8080/ \
+    install-plugin copyartifact job-dsl pipeline-utility-steps
+```
+
+or from the web interface: *http://**<your_hostname_here>**:30001/**pluginManager/available***
+
+##### Disable security
+
+```
+sed -i 's/<useSecurity>true/<useSecurity>false/' /var/jenkins_home/config.xml
+```
+
+or from the web interface: *http://**<your_hostname_here>**:30001/**configureSecurity***
+
+##### Restart Jenkins
+```
+java -jar /var/jenkins_home/war/WEB-INF/jenkins-cli.jar \
+    -auth admin:admin \
+    -s http://127.0.0.1:8080/ \
+    safe-restart
+```
+
+##### Jenkins DSL Jobs Automatic Provisioning
+
+![New Item](readme_images/dsl-jobs/1.png?raw=true "New Item")
+
+![dsl-jobs](readme_images/dsl-jobs/2.png?raw=true "dsl-jobs")
+
+![scm](readme_images/dsl-jobs/3.png?raw=true "scm")
+
+![Build](readme_images/dsl-jobs/4.png?raw=true "Build")
+
+![Build Dsl Jobs](readme_images/dsl-jobs/5.png?raw=true "Build Dsl Jobs")
+
+![Build Now](readme_images/dsl-jobs/6.png?raw=true "Build Now")
+
+
+
+
+
+
 
 
 
