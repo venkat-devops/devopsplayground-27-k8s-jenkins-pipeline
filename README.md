@@ -166,16 +166,19 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 ##### Unlock Jenkins
 
 ![unlock](readme_images/jenkins-setup-wizard/1.png?raw=true "unlock")
+---
 
 ##### Install plugins
 
 ![plugins](readme_images/jenkins-setup-wizard/2.png?raw=true "plugins") 
+---
 
 ##### Create admin user 
 
 ![admin](readme_images/jenkins-setup-wizard/3a.png?raw=true "admin") 
 
-![saveandcontinue](readme_images/jenkins-setup-wizard/3b.png?raw=true "saveandcontinue") 
+![saveandcontinue](readme_images/jenkins-setup-wizard/3b.png?raw=true "saveandcontinue")
+--- 
 
 ##### Install additional plugins
 
@@ -228,6 +231,7 @@ Repository URL: `https://github.com/ecsdigital/devopsplayground-27-k8s-jenkins-p
 DSL Scripts: `jenkins-jobs/dsl-jobs/**/*.groovy`
 
 ![Build Dsl Jobs](readme_images/dsl-jobs/5.png?raw=true "Build Dsl Jobs")
+---
 
 ![Build Now](readme_images/dsl-jobs/6.png?raw=true "Build Now")
 
