@@ -109,7 +109,7 @@ kubectl describe node $K8S_MASTER
 
 kubectl taint node $K8S_MASTER node-role.kubernetes.io/master:-
 ```
-
+---
 
 #### Jenkins RBAC Permissions
 ```
@@ -154,6 +154,9 @@ kubectl exec -ti $JENKINS_POD -- bash
 cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
+
+---
+
 ### Jenkins configuration
 
 ##### Connect to Jenkins
@@ -162,7 +165,7 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 ##### Unlock Jenkins
 
-![unklock](readme_images/jenkins-setup-wizard/1.png?raw=true "unlock")
+![unlock](readme_images/jenkins-setup-wizard/1.png?raw=true "unlock")
 
 ##### Install plugins
 
