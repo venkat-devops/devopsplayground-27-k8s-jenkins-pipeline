@@ -62,7 +62,12 @@ spec:
 This configuration ideally lives on its own repository and is versioned separately.
 For simplicity it's included with in the same repository as the other resources for the scope of this playground.
 
-## List of commands used during the playground:
+### Requirements
+
+The bash script used to setup the linux server requirements.
+
+---
+# Commands
 
 #### CD repo folder
 
@@ -142,7 +147,7 @@ kubectl create -f  jenkins-build/service.yaml
 export JENKINS_POD=$(kubectl get po -l name=jenkins -o name | cut -d/ -f2)
 
 # Get the admin password from the logs 
-kubectl logs $JENKINS_POD
+kubectl logs -f $JENKINS_POD
 
 # Or from inside the container
 kubectl exec -ti $JENKINS_POD -- bash
@@ -157,9 +162,17 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 ##### Unlock Jenkins
 
-##### Install plugins 
+![unklock](readme_images/jenkins-setup-wizard/1.png?raw=true "unlock")
+
+##### Install plugins
+
+![plugins](readme_images/jenkins-setup-wizard/2.png?raw=true "plugins") 
 
 ##### Create admin user 
+
+![admin](readme_images/jenkins-setup-wizard/3a.png?raw=true "admin") 
+
+![saveandcontinue](readme_images/jenkins-setup-wizard/3b.png?raw=true "saveandcontinue") 
 
 ##### Install additional plugins
 
