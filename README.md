@@ -104,6 +104,7 @@ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documen
 #### Find master node name and make it schedulable
 ```
 export K8S_MASTER=$(kubectl get nodes -o name | cut -d/ -f2)
+echo $K8S_MASTER
 
 kubectl describe node $K8S_MASTER
 
@@ -119,9 +120,10 @@ kubectl create -f jenkins-build/rbac.yaml
 #### Find Jenkins secret token
 ```
 JENKINS_TOKEN=$(kubectl get secrets $(kubectl get sa jenkins -o json|jq -r '.secrets[].name') -o json|jq -r '.data.token'|base64 -d)
+echo $JENKINS_TOKEN
 ```
 
-Or use the manual commands
+or use the manual commands
 ```
 kubectl get secrets
 kubectl describe secret <jenkins-token-xxxxxxxx>
@@ -145,13 +147,13 @@ kubectl create -f  jenkins-build/service.yaml
 ```
 # Save Jenkins pod name in env var
 export JENKINS_POD=$(kubectl get po -l name=jenkins -o name | cut -d/ -f2)
+echo $JENKINS_POD
 
 # Get the admin password from the logs 
 kubectl logs -f $JENKINS_POD
 
 # Or from inside the container
-kubectl exec -ti $JENKINS_POD -- bash
-cat /var/jenkins_home/secrets/initialAdminPassword
+kubectl exec $JENKINS_POD -- cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
 
@@ -163,17 +165,11 @@ cat /var/jenkins_home/secrets/initialAdminPassword
 
 > http://**<your_hostname_here>**.ldn.devopsplayground.com:**30001**
 
-##### Unlock Jenkins
-
 ![unlock](readme_images/jenkins-setup-wizard/1.png?raw=true "unlock")
 ---
 
-##### Install plugins
-
 ![plugins](readme_images/jenkins-setup-wizard/2.png?raw=true "plugins") 
 ---
-
-##### Create admin user 
 
 ![admin](readme_images/jenkins-setup-wizard/3a.png?raw=true "admin") 
 
